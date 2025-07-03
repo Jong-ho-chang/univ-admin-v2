@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수시 입시결과 검색</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>수시 입시결과 조회</h1>
+
+  <div class="search-box">
+    <input type="text" id="year" placeholder="연도 입력 (예: 2023)">
+    <input type="text" id="univ" placeholder="대학명 입력">
+    <input type="text" id="type" placeholder="교과/종합 입력">
+    <input type="text" id="dept" placeholder="모집단위 입력">
+  </div>
+
+  <div class="graph-columns">
+    <strong>그래프로 보고 싶은 항목 선택:</strong>
+    <label><input type="radio" name="graph-type" value="환산_50% cut" checked> 환산점수</label>
+    <label><input type="radio" name="graph-type" value="등급_50% cut"> 교과등급</label>
+  </div>
+
+  <button id="draw-chart">선택된 항목으로 그래프 보기</button>
+
+  <table>
+    <thead id="table-head"></thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
+
+  <script src="data_full.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

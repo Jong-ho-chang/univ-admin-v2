@@ -1,0 +1,84 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 20px;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-box input {
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.graph-columns {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.graph-columns label {
+  margin-right: 15px;
+  font-size: 14px;
+}
+
+#draw-chart {
+  display: block;
+  margin: 10px auto;
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#draw-chart:hover {
+  background-color: #0056b3;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: white;
+  table-layout: auto;
+  word-break: keep-all;
+}
+
+thead th {
+  background-color: #dee2e6;
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #adb5bd;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #dee2e6;
+  white-space: nowrap;
+}
+
+tr:hover {
+  background-color: #f1f3f5;
+}
+
+.chart-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 30px auto;
+}
