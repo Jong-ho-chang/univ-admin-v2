@@ -19,7 +19,19 @@
       <p style="margin-top: 5px; color: #28a745; font-size: 12px;">✅ 대학명 검색: "서울대" 입력 시 서울대만 검색, "서울" 입력 시 서울이 포함된 모든 대학 검색</p>
     </div>
 
+    <div id="tableContainer">
+      <h3>📋 상세 데이터</h3>
+      <p style="margin: 10px 0; color: #666; font-size: 12px;">
+        📊 정렬: <strong>"연도별 추이 정렬"</strong> 버튼으로 같은 전형의 같은 학과를 연도별로 비교하여 추이를 확인할 수 있습니다.
+      </p>
+      <p style="margin: 10px 0; color: #28a745; font-size: 12px;">
+        ✅ 데이터 정규화 완료: 전형명이 통일되어 정확한 정렬이 가능합니다.
+      </p>
+      <table id="resultTable" class="sortable"></table>
+    </div>
+
     <div id="chartContainer">
+      <h3>📊 분석 그래프</h3>
       <label>그래프 항목 선택:</label>
       <div class="combo-buttons">
         <label><input type="checkbox" value="경쟁률" onchange="updateChart()"> 경쟁률</label>
@@ -42,17 +54,7 @@
       <p style="margin: 10px 0; color: #666; font-size: 12px;">
         💡 경쟁률과 Cut 점수를 함께 선택하면 이중 Y축으로 비교 분석이 가능합니다.
       </p>
-      <p style="margin: 10px 0; color: #666; font-size: 12px;">
-        📊 정렬: <strong>"연도별 추이 정렬"</strong> 버튼으로 같은 전형의 같은 학과를 연도별로 비교하여 추이를 확인할 수 있습니다.
-      </p>
-      <p style="margin: 10px 0; color: #28a745; font-size: 12px;">
-        ✅ 데이터 정규화 완료: 전형명이 통일되어 정확한 정렬이 가능합니다.
-      </p>
       <canvas id="resultChart"></canvas>
-    </div>
-
-    <div id="tableContainer">
-      <table id="resultTable" class="sortable"></table>
     </div>
   </div>
 

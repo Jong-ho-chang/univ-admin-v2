@@ -48,6 +48,14 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+#chartContainer h3 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 18px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
 .combo-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -90,7 +98,7 @@ body {
 
 #resultChart {
   width: 100% !important;
-  height: 500px !important;
+  height: 400px !important;
   margin: auto;
 }
 
@@ -101,7 +109,16 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+#tableContainer h3 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 18px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
 }
 
 #resultTable {
