@@ -34,10 +34,40 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log("majorInput:", majorInput);
 
   // 입력 시 실시간 검색 (디바운싱 적용)
-  yearInput.addEventListener('input', debouncedSearch);
-  univInput.addEventListener('input', debouncedSearch);
-  typeInput.addEventListener('input', debouncedSearch);
-  majorInput.addEventListener('input', debouncedSearch);
+  yearInput.addEventListener('input', () => debouncedSearch(false));
+  univInput.addEventListener('input', () => debouncedSearch(false));
+  univInput.addEventListener('change', () => {
+    clearTimeout(searchTimeout); // input의 debouncedSearch가 실행되지 않도록 보장
+    setTimeout(() => searchData(true), 0); // 정확히 일치 검색을 가장 마지막에 실행
+  });
+  typeInput.addEventListener('input', () => debouncedSearch(false));
+  majorInput.addEventListener('input', () => debouncedSearch(false));
+
+  // 입력창 초기화 시 즉시 빈 결과 반환 (성능 최적화)
+  yearInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape' || (e.key === 'Backspace' && yearInput.value === '')) {
+      clearTimeout(searchTimeout);
+      searchData(false);
+    }
+  });
+  univInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape' || (e.key === 'Backspace' && univInput.value === '')) {
+      clearTimeout(searchTimeout);
+      searchData(false);
+    }
+  });
+  typeInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape' || (e.key === 'Backspace' && typeInput.value === '')) {
+      clearTimeout(searchTimeout);
+      searchData(false);
+    }
+  });
+  majorInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape' || (e.key === 'Backspace' && majorInput.value === '')) {
+      clearTimeout(searchTimeout);
+      searchData(false);
+    }
+  });
 
   // 대학명 자동완성 기능
   setupUniversityAutocomplete();
@@ -52,9 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 디바운싱 함수 (성능 최적화)
-function debouncedSearch() {
+function debouncedSearch(isExact = false) {
   clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(searchData, 300); // 300ms 지연
+  searchTimeout = setTimeout(() => searchData(isExact), 500); // 300ms → 500ms로 증가
 }
 
 // 대학명 자동완성 설정
@@ -99,13 +129,14 @@ function setupUniversityAutocomplete() {
   console.log("datalist options 개수:", datalist.children.length);
 }
 
-function searchData() {
+function searchData(isExact = false) {
+  // 성능 최적화: 모든 입력이 비어있으면 빈 결과 반환
   const year = document.getElementById("yearInput").value.trim();
   const univ = document.getElementById("univInput").value.trim();
   const type = document.getElementById("typeInput").value.trim();
   const major = document.getElementById("majorInput").value.trim();
 
-  // 모든 검색 조건이 비어있으면 빈 결과 표시
+  // 모든 검색 조건이 비어있으면 빈 결과 반환 (성능 최적화)
   if (!year && !univ && !type && !major) {
     filteredData = [];
     renderTable(filteredData);
@@ -113,24 +144,51 @@ function searchData() {
     return;
   }
 
-  console.log("검색 조건:", { year, univ, type, major });
-  console.log("현재 데이터 개수:", data.length);
+  // 대학명 검색 로직 개선
+  const isExactUniversity = isExact || (univ && document.getElementById("univInput").list && 
+    Array.from(document.getElementById("univInput").list.options).some(option => option.value === univ));
 
-  // 검색 조건이 있을 때만 필터링
-  filteredData = data.filter(row => {
-    const yearMatch = year === "" || row["연도"].toString().includes(year);
-    const univMatch = univ === "" || row["대학명"].includes(univ);
-    const typeMatch = type === "" || row["전형명"].includes(type);
-    const majorMatch = major === "" || row["모집단위"].includes(major);
-    
-    return yearMatch && univMatch && typeMatch && majorMatch;
-  });
-
-  console.log("검색 결과 개수:", filteredData.length);
-  if (filteredData.length > 0) {
-    console.log("첫 번째 검색 결과:", filteredData[0]);
+  // 성능 최적화: 검색 조건이 적을 때만 전체 검색
+  let searchData = data;
+  
+  // 연도로 먼저 필터링 (가장 빠른 필터)
+  if (year) {
+    searchData = searchData.filter(row => row["연도"].toString().includes(year));
+  }
+  
+  // 대학명으로 필터링
+  if (univ) {
+    const searchUniv = univ.trim();
+    searchData = searchData.filter(row => {
+      const rowUniv = (row["대학명"] || "").trim();
+      
+      if (isExactUniversity) {
+        return rowUniv === searchUniv;
+      } else {
+        return rowUniv.toLowerCase().includes(searchUniv.toLowerCase());
+      }
+    });
+  }
+  
+  // 전형명으로 필터링
+  if (type) {
+    const searchType = type.trim();
+    searchData = searchData.filter(row => {
+      const rowMainType = (row["중심전형"] || "").trim();
+      if (isExact) {
+        return rowMainType.toLowerCase() === searchType.toLowerCase();
+      } else {
+        return rowMainType.toLowerCase().includes(searchType.toLowerCase());
+      }
+    });
+  }
+  
+  // 모집단위로 필터링
+  if (major) {
+    searchData = searchData.filter(row => row["모집단위"].includes(major));
   }
 
+  filteredData = searchData;
   renderTable(filteredData);
   updateChart();
 }

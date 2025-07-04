@@ -101,6 +101,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow-x: auto;
+  overflow-y: visible;
 }
 
 #resultTable {
@@ -110,6 +111,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 13px;
   line-height: 1.4;
+  min-width: 800px;
 }
 
 #resultTable th,
@@ -174,6 +176,17 @@ body {
 #resultTable td:nth-child(5) { /* 전형명 */
   font-weight: 500;
   color: #495057;
+}
+
+/* 대학명 컬럼 특별 스타일 - 가로로 모두 표시 */
+#resultTable td:nth-child(3) { /* 대학명 */
+  font-weight: 500;
+  color: #495057;
+  white-space: nowrap;
+  min-width: 120px;
+  max-width: none;
+  word-wrap: normal;
+  overflow: visible;
 }
 
 /* 모집단위 컬럼 스타일 */
