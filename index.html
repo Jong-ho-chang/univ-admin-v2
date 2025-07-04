@@ -1,39 +1,62 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>수시 입시결과 검색</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>대학 입시 결과 조회</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>수시 입시결과 조회</h1>
+  <div class="container">
+    <h1>대학 입시 결과 조회</h1>
+    <div class="search-area">
+      <input type="text" id="yearInput" placeholder="연도 입력 (예: 2023)" style="background: white; color: black;">
+      <input type="text" id="univInput" placeholder="대학명 입력 (정확한 대학명)" style="background: white; color: black;">
+      <input type="text" id="typeInput" placeholder="전형명 입력 (예: 교과/종합)" style="background: white; color: black;">
+      <input type="text" id="majorInput" placeholder="모집단위 입력 (예: 국어)" style="background: white; color: black;">
+      <p style="margin-top: 10px; color: #666; font-size: 12px;">입력하시면 자동으로 검색됩니다.</p>
+      <p style="margin-top: 5px; color: #007bff; font-size: 12px;">💡 검색 조건을 입력하면 결과가 표시됩니다. (예: "서울", "2025", "일반학생")</p>
+    </div>
 
-  <div class="search-box">
-    <input type="text" id="year" placeholder="연도 입력 (예: 2023)">
-    <input type="text" id="univ" placeholder="대학명 입력">
-    <input type="text" id="type" placeholder="교과/종합 입력">
-    <input type="text" id="dept" placeholder="모집단위 입력">
+    <div id="chartContainer">
+      <label>그래프 항목 선택:</label>
+      <div class="combo-buttons">
+        <label><input type="checkbox" value="경쟁률" onchange="updateChart()"> 경쟁률</label>
+        <label><input type="checkbox" value="등급_50" onchange="updateChart()"> 등급 50%</label>
+        <label><input type="checkbox" value="등급_70" onchange="updateChart()"> 등급 70%</label>
+        <label><input type="checkbox" value="등급_85" onchange="updateChart()"> 등급 85%</label>
+        <label><input type="checkbox" value="등급_90" onchange="updateChart()"> 등급 90%</label>
+        <label><input type="checkbox" value="환산_50" onchange="updateChart()"> 환산 50%</label>
+        <label><input type="checkbox" value="환산_70" onchange="updateChart()"> 환산 70%</label>
+      </div>
+      <div style="margin: 10px 0; padding: 10px; background: #e3f2fd; border-radius: 4px; border-left: 4px solid #2196f3;">
+        <label style="display: flex; align-items: center; gap: 8px; font-weight: 500; color: #1976d2;">
+          <input type="checkbox" id="showTrendLine" onchange="updateChart()" style="margin: 0;">
+          📈 2026년 추세선 표시 (2023-2025 데이터 기반 예측)
+        </label>
+        <p style="margin: 5px 0 0 0; font-size: 11px; color: #1565c0;">
+          선택된 지표에 대해 선형 회귀를 사용하여 2026년 예측값을 계산합니다.
+        </p>
+      </div>
+      <p style="margin: 10px 0; color: #666; font-size: 12px;">
+        💡 경쟁률과 Cut 점수를 함께 선택하면 이중 Y축으로 비교 분석이 가능합니다.
+      </p>
+      <p style="margin: 10px 0; color: #666; font-size: 12px;">
+        📊 정렬: <strong>"연도별 추이 정렬"</strong> 버튼으로 같은 전형의 같은 학과를 연도별로 비교하여 추이를 확인할 수 있습니다.
+      </p>
+      <p style="margin: 10px 0; color: #28a745; font-size: 12px;">
+        ✅ 데이터 정규화 완료: 전형명이 통일되어 정확한 정렬이 가능합니다.
+      </p>
+      <canvas id="resultChart"></canvas>
+    </div>
+
+    <div id="tableContainer">
+      <table id="resultTable" class="sortable"></table>
+    </div>
   </div>
 
-  <div class="graph-columns">
-    <strong>그래프로 보고 싶은 항목 선택:</strong>
-    <label><input type="radio" name="graph-type" value="환산_50% cut" checked> 환산점수</label>
-    <label><input type="radio" name="graph-type" value="등급_50% cut"> 교과등급</label>
-  </div>
-
-  <button id="draw-chart">선택된 항목으로 그래프 보기</button>
-
-  <table>
-    <thead id="table-head"></thead>
-    <tbody id="table-body"></tbody>
-  </table>
-
-  <div class="chart-container">
-    <canvas id="chart"></canvas>
-  </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
   <script src="data_full.js"></script>
   <script src="script.js"></script>
 </body>

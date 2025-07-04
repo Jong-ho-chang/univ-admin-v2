@@ -1,84 +1,196 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Arial, sans-serif;
   margin: 20px;
-  background-color: #f8f9fa;
-  color: #212529;
+  background: #f9f9f9;
 }
 
-h1 {
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.search-area {
+  margin-bottom: 20px;
   text-align: center;
-  margin-bottom: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.search-box {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.search-box input {
-  padding: 6px 10px;
-  border: 1px solid #ced4da;
+.search-area input {
+  margin: 5px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  min-width: 150px;
-}
-
-.graph-columns {
-  margin: 10px 0;
-  text-align: center;
-}
-
-.graph-columns label {
-  margin-right: 15px;
   font-size: 14px;
 }
 
-#draw-chart {
-  display: block;
-  margin: 10px auto;
-  padding: 6px 12px;
-  background-color: #007bff;
+.search-area button {
+  padding: 8px 16px;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
 }
 
-#draw-chart:hover {
-  background-color: #0056b3;
+.search-area button:hover {
+  background: #0056b3;
 }
 
-table {
+#chartContainer {
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.combo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.combo-buttons label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  min-width: 100px;
+}
+
+.combo-buttons label:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.combo-buttons input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.combo-buttons input[type="checkbox"]:checked + span {
+  font-weight: bold;
+  color: #007bff;
+}
+
+#resultChart {
+  width: 100% !important;
+  height: 500px !important;
+  margin: auto;
+}
+
+#tableContainer {
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow-x: auto;
+}
+
+#resultTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
-  background-color: white;
-  table-layout: auto;
-  word-break: keep-all;
+  margin-top: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
-thead th {
-  background-color: #dee2e6;
-  padding: 8px;
+#resultTable th,
+#resultTable td {
+  border: 1px solid #e0e0e0;
+  padding: 10px 12px;
   text-align: left;
-  border-bottom: 1px solid #adb5bd;
-  white-space: nowrap;
+  vertical-align: middle;
 }
 
-tbody td {
-  padding: 6px 8px;
-  border-bottom: 1px solid #dee2e6;
-  white-space: nowrap;
+#resultTable th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  font-size: 14px;
+  color: #495057;
+  position: relative;
+  border-bottom: 2px solid #dee2e6;
 }
 
-tr:hover {
-  background-color: #f1f3f5;
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
 }
 
-.chart-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 30px auto;
+.sortable-header:hover {
+  background-color: #e9ecef !important;
+}
+
+.sort-icon {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+#resultTable tr:hover {
+  background-color: #f8f9fa;
+}
+
+#resultTable td {
+  color: #212529;
+  font-weight: 400;
+}
+
+/* 숫자 컬럼 우측 정렬 */
+#resultTable td:nth-child(n+6) {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+/* 체크박스 컬럼 중앙 정렬 */
+#resultTable td:first-child {
+  text-align: center;
+  width: 50px;
+}
+
+/* 연도, 대학명, 전형명 컬럼 스타일 */
+#resultTable td:nth-child(2), /* 연도 */
+#resultTable td:nth-child(3), /* 대학명 */
+#resultTable td:nth-child(4), /* 중심전형 */
+#resultTable td:nth-child(5) { /* 전형명 */
+  font-weight: 500;
+  color: #495057;
+}
+
+/* 모집단위 컬럼 스타일 */
+#resultTable td:nth-child(6) { /* 모집단위 */
+  font-weight: 500;
+  color: #495057;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* 체크박스 스타일링 */
+#resultTable input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* 전체선택 체크박스 */
+#selectAll {
+  margin-right: 5px;
 }
