@@ -36,10 +36,29 @@ document.addEventListener('DOMContentLoaded', function() {
   // 입력 시 실시간 검색 (디바운싱 적용)
   yearInput.addEventListener('input', () => debouncedSearch(false));
   univInput.addEventListener('input', () => debouncedSearch(false));
+  
+  // 대학명 자동완성 선택 시 정확한 검색 (브라우저 호환성 강화)
   univInput.addEventListener('change', () => {
-    clearTimeout(searchTimeout); // input의 debouncedSearch가 실행되지 않도록 보장
-    setTimeout(() => searchData(true), 0); // 정확히 일치 검색을 가장 마지막에 실행
+    clearTimeout(searchTimeout);
+    setTimeout(() => searchData(true), 0);
   });
+  
+  // Edge 브라우저 호환성을 위한 추가 이벤트
+  univInput.addEventListener('blur', () => {
+    const currentValue = univInput.value.trim();
+    if (currentValue) {
+      // 자동완성 목록에서 정확히 일치하는 항목이 있는지 확인
+      const datalist = document.getElementById("univInput").list;
+      if (datalist) {
+        const exactMatch = Array.from(datalist.options).some(option => option.value === currentValue);
+        if (exactMatch) {
+          clearTimeout(searchTimeout);
+          setTimeout(() => searchData(true), 0);
+        }
+      }
+    }
+  });
+  
   typeInput.addEventListener('input', () => debouncedSearch(false));
   majorInput.addEventListener('input', () => debouncedSearch(false));
 
@@ -144,9 +163,29 @@ function searchData(isExact = false) {
     return;
   }
 
-  // 대학명 검색 로직 개선
-  const isExactUniversity = isExact || (univ && document.getElementById("univInput").list && 
-    Array.from(document.getElementById("univInput").list.options).some(option => option.value === univ));
+  // 대학명 검색 로직 개선 (브라우저 호환성 강화)
+  let isExactUniversity = isExact;
+  
+  // 자동완성 목록에서 정확히 일치하는 항목이 있는지 확인
+  if (univ && document.getElementById("univInput").list) {
+    const datalist = document.getElementById("univInput").list;
+    const exactMatch = Array.from(datalist.options).some(option => option.value === univ);
+    isExactUniversity = isExactUniversity || exactMatch;
+  }
+  
+  // 추가 검증: 입력값이 완전한 대학명인지 확인
+  if (univ && !isExactUniversity) {
+    const allUniversities = [...new Set(data.map(row => row["대학명"]))];
+    const exactUniversityMatch = allUniversities.some(uni => uni === univ);
+    isExactUniversity = exactUniversityMatch;
+  }
+  
+  // 디버깅용 로그 (브라우저별 동작 확인)
+  if (univ) {
+    console.log(`검색 대학명: "${univ}"`);
+    console.log(`정확한 검색 여부: ${isExactUniversity}`);
+    console.log(`브라우저: ${navigator.userAgent}`);
+  }
 
   // 성능 최적화: 검색 조건이 적을 때만 전체 검색
   let searchData = data;
@@ -467,6 +506,7 @@ function updateChart() {
             text: 'Cut 점수'
           },
           beginAtZero: false,
+          reverse: true, // 등급은 낮을수록 좋으므로 Y축 반전
           grid: {
             drawOnChartArea: false,
           },
