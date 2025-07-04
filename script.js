@@ -258,6 +258,9 @@ function renderTable(data) {
   window.typeColumnIndex = headers.indexOf("전형명") + 1; // 체크박스 컬럼 때문에 +1
   window.majorColumnIndex = headers.indexOf("모집단위") + 1; // 체크박스 컬럼 때문에 +1
   window.yearColumnIndex = headers.indexOf("연도") + 1; // 체크박스 컬럼 때문에 +1
+  
+  // 테이블 렌더링 후 그래프 업데이트 (선택된 데이터만 표시)
+  updateChart();
 }
 
 // 전체 선택/해제 기능
@@ -268,6 +271,13 @@ function toggleAllRows() {
   checkboxes.forEach(checkbox => {
     checkbox.checked = selectAll.checked;
   });
+  
+  // 전체선택 상태에 따라 버튼 텍스트 변경
+  if (selectAll.checked) {
+    selectAll.parentElement.innerHTML = '<input type="checkbox" id="selectAll" onchange="toggleAllRows()" checked> 전체해제';
+  } else {
+    selectAll.parentElement.innerHTML = '<input type="checkbox" id="selectAll" onchange="toggleAllRows()"> 전체선택';
+  }
   
   updateChart();
 }
@@ -281,9 +291,49 @@ function updateChart() {
     filteredData[parseInt(checkbox.dataset.index)]
   );
 
+  // 체크된 항목이 없으면 그래프를 숨김
   if (selectedData.length === 0) {
-    // 체크된 항목이 없으면 전체 데이터 사용
-    selectedData.push(...filteredData);
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+    const canvas = document.getElementById("resultChart");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 안내 메시지 표시
+    const chartContainer = document.getElementById("chartContainer");
+    let messageDiv = chartContainer.querySelector('.no-data-message');
+    if (!messageDiv) {
+      messageDiv = document.createElement('div');
+      messageDiv.className = 'no-data-message';
+      messageDiv.style.cssText = `
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        font-size: 16px;
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        margin: 20px 0;
+      `;
+      messageDiv.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+        <div style="font-weight: bold; margin-bottom: 5px;">그래프를 표시하려면</div>
+        <div>표에서 분석하고 싶은 데이터를 선택해주세요</div>
+        <div style="font-size: 12px; margin-top: 10px; color: #999;">
+          💡 체크박스를 클릭하여 원하는 행을 선택하거나 "전체선택"을 사용하세요
+        </div>
+      `;
+      chartContainer.appendChild(messageDiv);
+    }
+    return;
+  }
+  
+  // 기존 안내 메시지 제거
+  const existingMessage = document.querySelector('.no-data-message');
+  if (existingMessage) {
+    existingMessage.remove();
   }
 
   const selected = Array.from(document.querySelectorAll('.combo-buttons input[type="checkbox"]:checked'))
@@ -448,15 +498,40 @@ function updateChart() {
           position: "top",
           labels: {
             usePointStyle: true,
-            padding: 20
+            padding: 20,
+            font: {
+              size: 13,
+              weight: '500'
+            },
+            color: '#333'
           }
         },
         title: { 
           display: true, 
           text: showTrendLine ? "연도별 입시 결과 비교 + 2026년 추세 예측" : "연도별 입시 결과 비교 (경쟁률 vs Cut 점수)",
-          font: { size: 16 }
+          font: { 
+            size: 16,
+            weight: 'bold'
+          },
+          color: '#333',
+          padding: 20
         },
         tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#333',
+          borderWidth: 1,
+          cornerRadius: 6,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13,
+            weight: '500'
+          },
+          padding: 12,
           callbacks: {
             label: function(context) {
               let label = context.dataset.label || '';
@@ -484,7 +559,25 @@ function updateChart() {
           display: true,
           title: {
             display: true,
-            text: '연도'
+            text: '연도',
+            font: {
+              size: 14,
+              weight: 'bold'
+            },
+            color: '#333',
+            padding: 10
+          },
+          ticks: {
+            font: {
+              size: 12,
+              weight: '500'
+            },
+            color: '#555',
+            padding: 5
+          },
+          grid: {
+            color: '#e0e0e0',
+            lineWidth: 1
           }
         },
         y: {
@@ -493,9 +586,27 @@ function updateChart() {
           position: 'left',
           title: {
             display: true,
-            text: '경쟁률'
+            text: '경쟁률',
+            font: {
+              size: 14,
+              weight: 'bold'
+            },
+            color: '#333',
+            padding: 10
           },
-          beginAtZero: true
+          beginAtZero: true,
+          ticks: {
+            font: {
+              size: 12,
+              weight: '500'
+            },
+            color: '#555',
+            padding: 5
+          },
+          grid: {
+            color: '#e0e0e0',
+            lineWidth: 1
+          }
         },
         y1: {
           type: 'linear',
@@ -503,12 +614,28 @@ function updateChart() {
           position: 'right',
           title: {
             display: true,
-            text: 'Cut 점수'
+            text: 'Cut 점수',
+            font: {
+              size: 14,
+              weight: 'bold'
+            },
+            color: '#333',
+            padding: 10
           },
           beginAtZero: false,
           reverse: true, // 등급은 낮을수록 좋으므로 Y축 반전
+          ticks: {
+            font: {
+              size: 12,
+              weight: '500'
+            },
+            color: '#555',
+            padding: 5
+          },
           grid: {
             drawOnChartArea: false,
+            color: '#e0e0e0',
+            lineWidth: 1
           },
         }
       }
